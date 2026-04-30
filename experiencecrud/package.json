@@ -1,0 +1,18 @@
+{
+  "name": "experience-crud",
+  "version": "1.0.0",
+  "description": "WordPress plugin for managing winery experiences with Gutenberg support.",
+  "author": "Lucas",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^26.0.0"
+  }
+}

@@ -1,0 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;700&display=swap');
+
+.ec-experience-list-wrapper {
+    background-color: #fdfaf5;
+    padding: 60px 20px;
+    font-family: 'EB Garamond', serif;
+    color: #000;
+}
+
+.ec-experience-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.ec-experience-item {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: ecFadeIn 0.8s forwards;
+}
+
+.ec-experience-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.ec-experience-image {
+    flex: 1;
+    overflow: hidden;
+}
+
+.ec-experience-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.ec-experience-item:hover .ec-experience-image img {
+    transform: scale(1.05);
+}
+
+.ec-experience-content {
+    flex: 1;
+    text-align: left;
+}
+
+.ec-experience-item:nth-child(even) .ec-experience-content {
+    text-align: right;
+}
+
+.ec-experience-title {
+    font-size: 42px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.ec-experience-meta-summary {
+    display: flex;
+    gap: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.ec-experience-meta-summary span:not(:last-child)::after {
+    content: "|";
+    margin-left: 20px;
+    color: #ddd;
+}
+
+.ec-experience-excerpt {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.ec-open-modal {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.ec-open-modal:hover {
+    background: #333;
+}
+
+/* Modal Styling */
+.ec-experience-modal {
+    border: none;
+    padding: 0;
+    max-width: 1000px;
+    width: 95%;
+    max-height: 90vh;
+    background: #fdfaf5;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.ec-experience-modal::backdrop {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+}
+
+.ec-modal-inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ec-modal-scrollable {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.ec-close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #000;
+    color: #fff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: transform 0.3s;
+}
+
+.ec-close-modal:hover {
+    transform: rotate(90deg);
+}
+
+.ec-modal-header-visual {
+    width: 100%;
+}
+
+.ec-modal-hero-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    display: block;
+}
+
+.ec-modal-main-content {
+    padding: 60px;
+}
+
+.ec-modal-title {
+    font-size: 56px;
+    text-align: left;
+    margin: 0 0 40px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.ec-modal-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 60px;
+}
+
+.ec-modal-description {
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+.ec-modal-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.ec-modal-meta-box {
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #eee;
+}
+
+.ec-modal-meta-box h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.ec-meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f9f9f9;
+    font-size: 14px;
+}
+
+.ec-meta-row--block {
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ec-label {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #888;
+}
+
+.ec-value {
+    color: #000;
+}
+
+.ec-prices-list {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ec-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ec-button-full {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.ec-contact-button {
+    display: block;
+    text-align: center;
+    padding: 15px;
+    border: 1px solid #000;
+    color: #000;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.ec-contact-button:hover {
+    background: #000;
+    color: #fff;
+}
+
+.ec-back-button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    color: #888;
+    margin-top: 10px;
+}
+
+@keyframes ecFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ec-experience-item, .ec-experience-item:nth-child(even) {
+        flex-direction: column;
+        text-align: center;
+    }
+    .ec-experience-title {
+        font-size: 32px;
+    }
+    .ec-modal-inner {
+        padding: 30px;
+    }
+}
