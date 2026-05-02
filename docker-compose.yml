@@ -28,6 +28,15 @@ services:
       - wp_datab:/var/www/html
       - ./experiencecrud:/var/www/html/wp-content/plugins/experiencecrud
 
+  node-builder:
+    image: node:18
+    container_name: catenab_node
+    working_dir: /usr/src/app
+    volumes:
+      - ./experiencecrud:/usr/src/app
+    command: sh -c "npm install && npm run start"
+
+
 volumes:
   db_datab:
   wp_datab:
