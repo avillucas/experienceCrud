@@ -16,170 +16,265 @@ if ( function_exists( 'pll_current_language' ) ) {
 
 $query = new WP_Query( $args );
 
-if ( ! $query->have_posts() ) {
-	return '<p>' . __( 'No se encontraron experiencias.', 'experience-crud' ) . '</p>';
-}
+// Preparamos datos para Schema.org
+$schema_data = [
+    "@context" => "https://schema.org",
+    "@type" => "ItemList",
+    "itemListElement" => []
+];
 
 ob_start();
 ?>
 <div class="ec-experience-list-wrapper">
-	<div class="ec-experience-grid">
-		<?php while ( $query->have_posts() ) : $query->the_post(); 
-			$id = get_the_ID();
-			$duration = get_post_meta( $id, 'ec_duration_min', true );
-			$min_members = get_post_meta( $id, 'ec_min_members', true );
-			$max_members = get_post_meta( $id, 'ec_max_members', true );
-			$prices = get_post_meta( $id, 'ec_prices_list', true );
-            $booking_url = get_post_meta( $id, 'ec_booking_url', true );
-            $contact_email = get_post_meta( $id, 'ec_contact_email', true );
-		?>
-			<article class="ec-experience-item" data-id="<?php echo esc_attr( $id ); ?>">
-				<div class="ec-experience-image">
-					<?php if ( has_post_thumbnail() ) : ?>
-						<?php the_post_thumbnail( 'large' ); ?>
-					<?php endif; ?>
-				</div>
-				<div class="ec-experience-content">
-					<h2 class="ec-experience-title"><?php the_title(); ?></h2>
-					
-					<div class="ec-experience-meta-summary">
-						<?php if ( $duration ) : ?>
-							<span><?php echo esc_html( $duration ); ?> min</span>
-						<?php endif; ?>
-						<?php if ( $max_members ) : ?>
-							<span><?php printf( __( 'Up to %s people', 'experience-crud' ), esc_html( $max_members ) ); ?></span>
-						<?php endif; ?>
-					</div>
+    <!-- Slide Selector (Thumbnails) -->
+    <div class="slide-selector">
+        <?php 
+        $count = 1;
+        if ( $query->have_posts() ) :
+            while ( $query->have_posts() ) : $query->the_post();
+                $thumbnail_url = get_the_post_thumbnail_url( get_the_ID(), 'large' );
+                ?>
+                <div class="slide-box" data-slide="<?php echo esc_attr( $count ); ?>"
+                    style="background-image: url('<?php echo esc_url( $thumbnail_url ); ?>');">
+                    <div class="slide-box-overlay">
+                        <h3><?php the_title(); ?></h3>
+                    </div>
+                </div>
+                <?php
+                $count++;
+            endwhile;
+            wp_reset_postdata();
+        endif;
+        ?>
+    </div>
 
-					<div class="ec-experience-excerpt">
-						<?php the_excerpt(); ?>
-					</div>
-					<button class="ec-open-modal wp-element-button" data-id="<?php echo esc_attr( $id ); ?>">
-						<?php _e( 'VER MÁS', 'experience-crud' ); ?>
-					</button>
-				</div>
+    <!-- Custom Slider (Content) -->
+    <div class="custom-slider">
+        <!-- Slide 0: Our Experience (fijo al inicio) -->
+        <div class="slide active" data-slide-index="0">
+            <div class="slide-container slide-container--centered">
+                <figure class="slide-image">
+                    <img src="http://localhost:8088/wp-content/uploads/2025/05/nuestras-experiencias.svg" alt="Nuestras Experiencias" style="width: 500px; margin-top: 50px;" />
+                </figure>
+                <div class="slide-content">
+                    <p>Si está planeando un viaje a Mendoza - ARG, nos encantaría que nos visite en La Pirámide, nuestra bodega familiar.</p>
+                    <p>Nuestros guías especializados realizan tours para grupos reducidos, por lo que recomendamos reservar un día y horario con anticipación.</p>
+                    <p>Por favor haga clic en el siguiente enlace para realizar su reserva. ¡Lo esperamos!</p>
+                    
+                    <div class="contact-link-wrapper">
+                        <a href="mailto:turismo@catenazapata.com" style="font-size: 14px; font-weight: 400; line-height: 1.7; color: #000 !important;">
+                            Contactanos: turismo@catenazapata.com
+                        </a>
+                    </div>
 
-				<!-- Modal Details (Dialog API) -->
-				<dialog id="ec-modal-<?php echo esc_attr( $id ); ?>" class="ec-experience-modal">
-					<div class="ec-modal-inner">
-						<button class="ec-close-modal" aria-label="<?php _e( 'Cerrar', 'experience-crud' ); ?>">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-						</button>
-						
-						<div class="ec-modal-scrollable">
-							<div class="ec-modal-header-visual">
-								<?php if ( has_post_thumbnail() ) : ?>
-									<div class="ec-modal-hero-image">
-										<?php the_post_thumbnail( 'full' ); ?>
-									</div>
-								<?php endif; ?>
-							</div>
+                    <div class="slide-buttons">
+                        <div class="wp-block-button">
+                            <a class="wp-block-button__link" 
+                               href="https://catenazapata.meitre.com/"
+                               style="background-color: #000; color: #fff; border-radius: 0; padding: 7px 12px; font-size: 12px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase; text-decoration: none;">
+                                RESERVAR
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-							<div class="ec-modal-main-content">
-								<h1 class="ec-modal-title"><?php the_title(); ?></h1>
-								
-								<div class="ec-modal-body-grid">
-									<div class="ec-modal-description">
-										<?php echo apply_filters( 'the_content', get_the_content() ); ?>
-									</div>
+        <?php 
+        $count = 1;
+        $query = new WP_Query( $args ); // Reset query for the slides
+        if ( $query->have_posts() ) :
+            while ( $query->have_posts() ) : $query->the_post(); 
+                $id = get_the_ID();
+                $title = get_the_title();
+                $summary = get_post_meta( $id, 'ec_summary', true );
+                $duration = get_post_meta( $id, 'ec_duration_min', true );
+                $min_members = get_post_meta( $id, 'ec_min_members', true );
+                $max_members = get_post_meta( $id, 'ec_max_members', true );
+                $price = get_post_meta( $id, 'ec_price', true );
+                $price_from = get_post_meta( $id, 'ec_price_valid_from', true );
+                $price_to = get_post_meta( $id, 'ec_price_valid_to', true );
+                $booking_url = get_post_meta( $id, 'ec_booking_url', true );
+                $contact_email = get_post_meta( $id, 'ec_contact_email', true );
+                $related_raw = get_post_meta( $id, 'ec_related_products', true );
+                $legacy_prices = get_post_meta( $id, 'ec_prices_list', true );
 
-									<aside class="ec-modal-sidebar">
-										<div class="ec-modal-meta-box">
-											<h3><?php _e( 'Detalles', 'experience-crud' ); ?></h3>
-											
-											<?php if ( $duration ) : ?>
-												<div class="ec-meta-row">
-													<span class="ec-label"><?php _e( 'Duración:', 'experience-crud' ); ?></span>
-													<span class="ec-value"><?php echo esc_html( $duration ); ?> <?php _e( 'minutos', 'experience-crud' ); ?></span>
-												</div>
-											<?php endif; ?>
+                // Agregar a Schema
+                $schema_item = [
+                    "@type" => "ListItem",
+                    "position" => $count,
+                    "item" => [
+                        "@type" => "Service",
+                        "name" => $title,
+                        "description" => $summary ?: wp_trim_words( get_the_content(), 20 ),
+                        "provider" => [
+                            "@type" => "Winery",
+                            "name" => "Catena Zapata"
+                        ],
+                        "url" => get_permalink()
+                    ]
+                ];
+                if ( $price ) {
+                    $schema_item['item']['offers'] = [
+                        "@type" => "Offer",
+                        "price" => $price,
+                        "priceCurrency" => "ARS",
+                        "url" => $booking_url ?: get_permalink()
+                    ];
+                    if ( $price_to ) {
+                        $schema_item['item']['offers']['priceValidUntil'] = $price_to;
+                    }
+                }
+                $schema_data['itemListElement'][] = $schema_item;
+                ?>
+                <div class="slide" data-slide-index="<?php echo esc_attr( $count ); ?>">
+                    <div class="slide-container">
+                        <figure class="slide-image">
+                            <?php if ( has_post_thumbnail() ) : ?>
+                                <?php the_post_thumbnail( 'large', ['style' => 'width: 400px; display: block; margin: 0 auto;'] ); ?>
+                            <?php endif; ?>
+                        </figure>
+                        
+                        <div class="slide-content slide-content--left">
+                            <?php if ( $summary ) : ?>
+                                <p class="experience-summary"><strong><?php echo esc_html( $summary ); ?></strong></p>
+                            <?php endif; ?>
 
-											<?php if ( $min_members || $max_members ) : ?>
-												<div class="ec-meta-row">
-													<span class="ec-label"><?php _e( 'Capacidad:', 'experience-crud' ); ?></span>
-													<span class="ec-value">
-														<?php 
-														if ( $min_members && $max_members ) {
-															printf( __( 'Grupos de %1$s a %2$s personas', 'experience-crud' ), esc_html( $min_members ), esc_html( $max_members ) );
-														} elseif ( $max_members ) {
-															printf( __( 'Hasta %s personas', 'experience-crud' ), esc_html( $max_members ) );
-														} else {
-															printf( __( 'Mínimo %s personas', 'experience-crud' ), esc_html( $min_members ) );
-														}
-														?>
-													</span>
-												</div>
-											<?php endif; ?>
+                            <div class="experience-description">
+                                <?php the_content(); ?>
+                            </div>
 
-											<?php if ( $prices ) : ?>
-												<div class="ec-meta-row ec-meta-row--block">
-													<span class="ec-label"><?php _e( 'Precios:', 'experience-crud' ); ?></span>
-													<div class="ec-value ec-prices-list"><?php echo wpautop( esc_html( $prices ) ); ?></div>
-												</div>
-											<?php endif; ?>
-										</div>
+                            <?php if ( $duration || $min_members || $max_members ) : ?>
+                                <p><strong>Detalles:</strong></p>
+                                <ul>
+                                    <?php if ( $duration ) : ?>
+                                        <li>Duración: <?php echo esc_html( $duration ); ?> min</li>
+                                    <?php endif; ?>
+                                    <?php if ( $min_members || $max_members ) : ?>
+                                        <li>Capacidad: 
+                                            <?php 
+                                            if ( $min_members && $max_members ) {
+                                                printf( 'Grupos de %1$s a %2$s personas', esc_html( $min_members ), esc_html( $max_members ) );
+                                            } elseif ( $max_members ) {
+                                                printf( 'Hasta %s personas', esc_html( $max_members ) );
+                                            } else {
+                                                printf( 'Mínimo %s personas', esc_html( $min_members ) );
+                                            }
+                                            ?>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            <?php endif; ?>
 
-										<div class="ec-modal-actions">
-											<?php if ( $booking_url ) : ?>
-												<a href="<?php echo esc_url( $booking_url ); ?>" class="ec-button ec-button-primary ec-button-full" target="_blank">
-													<?php _e( 'RESERVAR', 'experience-crud' ); ?>
-												</a>
-											<?php endif; ?>
-											
-											<?php if ( $contact_email ) : ?>
-												<a href="mailto:<?php echo esc_attr( $contact_email ); ?>" class="ec-contact-button">
-													<?php _e( 'CONSULTAR POR EMAIL', 'experience-crud' ); ?>
-												</a>
-											<?php endif; ?>
+                            <?php if ( $price || $legacy_prices ) : ?>
+                                <p><strong>Precio:</strong></p>
+                                <div class="prices-content">
+                                    <?php if ( $price ) : ?>
+                                        <p>AR$ <?php echo number_format( $price, 0, ',', '.' ); ?> p/p 
+                                        <?php if ( $price_from || $price_to ) : ?>
+                                            desde <?php echo esc_html( $price_from ?: '...' ); ?> hasta <?php echo esc_html( $price_to ?: '...' ); ?>
+                                        <?php endif; ?>
+                                        </p>
+                                    <?php endif; ?>
+                                    <?php if ( $legacy_prices ) echo wpautop( esc_html( $legacy_prices ) ); ?>
+                                </div>
+                            <?php endif; ?>
 
-											<button class="ec-back-button ec-close-modal-trigger">
-												<?php _e( 'VOLVER', 'experience-crud' ); ?>
-											</button>
-										</div>
-									</aside>
-								</div>
-							</div>
-						</div>
-					</div>
-				</dialog>
-			</article>
-		<?php endwhile; wp_reset_postdata(); ?>
-	</div>
+                            <?php if ( $related_raw ) : ?>
+                                <p><strong>Productos Relacionados:</strong></p>
+                                <ul class="related-products">
+                                    <?php 
+                                    $lines = explode( "\n", $related_raw );
+                                    foreach ( $lines as $line ) {
+                                        $parts = explode( "|", $line );
+                                        if ( count( $parts ) >= 1 ) {
+                                            $name = trim( $parts[0] );
+                                            $url = isset( $parts[1] ) ? trim( $parts[1] ) : '#';
+                                            echo '<li><a href="' . esc_url( $url ) . '">' . esc_html( $name ) . '</a></li>';
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                            <?php endif; ?>
+
+                            <?php if ( $contact_email ) : ?>
+                                <div class="contact-link-wrapper">
+                                    <a href="mailto:<?php echo esc_attr( $contact_email ); ?>" style="font-size: 14px; font-weight: 400; line-height: 1.7; color: #000 !important;">
+                                        Contactanos: <?php echo esc_html( $contact_email ); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="slide-buttons">
+                                <?php if ( $booking_url ) : ?>
+                                    <div class="wp-block-button">
+                                        <a class="wp-block-button__link" 
+                                           href="<?php echo esc_url( $booking_url ); ?>"
+                                           style="background-color: #000; color: #fff; border-radius: 0; padding: 7px 12px; font-size: 12px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase; text-decoration: none;">
+                                            RESERVAR
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="slide-buttons">
+                                <button class="go-back-button">VOLVER</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                $count++;
+            endwhile;
+            wp_reset_postdata();
+        endif;
+        ?>
+    </div>
 </div>
 
+<!-- Schema.org Data -->
+<script type="application/ld+json">
+<?php echo json_encode( $schema_data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ); ?>
+</script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const openButtons = document.querySelectorAll('.ec-open-modal');
-    const closeButtons = document.querySelectorAll('.ec-close-modal, .ec-close-modal-trigger');
+document.addEventListener('DOMContentLoaded', function () {
+    const slideBoxes = document.querySelectorAll('.slide-box');
+    const slides = document.querySelectorAll('.slide');
+    const goBackButtons = document.querySelectorAll('.go-back-button');
 
-    openButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-id');
-            const dialog = document.getElementById('ec-modal-' + id);
-            if (dialog) {
-                dialog.showModal();
-                document.body.style.overflow = 'hidden'; // Prevent scroll
+    slideBoxes.forEach(box => {
+        box.addEventListener('click', function () {
+            const slideIndex = parseInt(this.getAttribute('data-slide'));
+
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
+            });
+            slideBoxes.forEach(b => b.classList.remove('active'));
+
+            if (slides[slideIndex]) {
+                slides[slideIndex].style.display = 'block';
+                setTimeout(() => {
+                    slides[slideIndex].classList.add('active');
+                }, 10);
             }
+            this.classList.add('active');
         });
     });
 
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const dialog = btn.closest('dialog');
-            if (dialog) {
-                dialog.close();
-                document.body.style.overflow = ''; // Restore scroll
-            }
-        });
-    });
+    goBackButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
+            });
+            slideBoxes.forEach(b => b.classList.remove('active'));
 
-    // Close on backdrop click
-    document.querySelectorAll('dialog.ec-experience-modal').forEach(dialog => {
-        dialog.addEventListener('click', (e) => {
-            if (e.target === dialog) {
-                dialog.close();
-                document.body.style.overflow = '';
-            }
+            slides[0].style.display = 'block';
+            setTimeout(() => {
+                slides[0].classList.add('active');
+            }, 10);
         });
     });
 });

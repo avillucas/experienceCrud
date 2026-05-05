@@ -1,301 +1,169 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;800&display=swap');
 
 .ec-experience-list-wrapper {
-    background-color: #fdfaf5;
-    padding: 60px 20px;
-    font-family: 'EB Garamond', serif;
-    color: #000;
-}
-
-.ec-experience-grid {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-}
-
-.ec-experience-item {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: ecFadeIn 0.8s forwards;
-}
-
-.ec-experience-item:nth-child(even) {
-    flex-direction: row-reverse;
-}
-
-.ec-experience-image {
-    flex: 1;
-    overflow: hidden;
-}
-
-.ec-experience-image img {
     width: 100%;
-    height: auto;
-    display: block;
-    transition: transform 0.5s ease;
-}
-
-.ec-experience-item:hover .ec-experience-image img {
-    transform: scale(1.05);
-}
-
-.ec-experience-content {
-    flex: 1;
-    text-align: left;
-}
-
-.ec-experience-item:nth-child(even) .ec-experience-content {
-    text-align: right;
-}
-
-.ec-experience-title {
-    font-size: 42px;
-    font-weight: 500;
-    margin: 0 0 10px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.ec-experience-meta-summary {
-    display: flex;
-    gap: 20px;
+    margin: 0 auto;
     font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #666;
-    margin-bottom: 20px;
 }
 
-.ec-experience-meta-summary span:not(:last-child)::after {
-    content: "|";
-    margin-left: 20px;
-    color: #ddd;
-}
-
-.ec-experience-excerpt {
-    font-size: 18px;
-    line-height: 1.6;
-    margin-bottom: 30px;
-}
-
-.ec-open-modal {
-    background: #000;
-    color: #fff;
-    border: none;
-    padding: 12px 30px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.ec-open-modal:hover {
-    background: #333;
-}
-
-/* Modal Styling */
-.ec-experience-modal {
-    border: none;
-    padding: 0;
-    max-width: 1000px;
-    width: 95%;
-    max-height: 90vh;
-    background: #fdfaf5;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-    overflow: hidden;
-}
-
-.ec-experience-modal::backdrop {
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-}
-
-.ec-modal-inner {
-    position: relative;
-    height: 100%;
+.slide-selector {
     display: flex;
     flex-direction: column;
+    gap: 0;
+    width: 100%;
 }
 
-.ec-modal-scrollable {
-    overflow-y: auto;
-    height: 100%;
-}
-
-.ec-close-modal {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: #000;
-    color: #fff;
-    border: none;
-    width: 40px;
-    height: 40px;
+.slide-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 1;
+    background-size: cover;
+    background-position: center;
     cursor: pointer;
+}
+
+.slide-box-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    transition: transform 0.3s;
+    background: rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
 }
 
-.ec-close-modal:hover {
-    transform: rotate(90deg);
+.slide-box:hover .slide-box-overlay,
+.slide-box.active .slide-box-overlay {
+    background: rgba(0, 0, 0, 0.4);
 }
 
-.ec-modal-header-visual {
-    width: 100%;
-}
-
-.ec-modal-hero-image img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    display: block;
-}
-
-.ec-modal-main-content {
-    padding: 60px;
-}
-
-.ec-modal-title {
-    font-size: 56px;
-    text-align: left;
-    margin: 0 0 40px;
+.slide-box h3 {
+    margin: 0;
+    color: white !important;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
     text-transform: uppercase;
-    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+    padding: 0 20px;
 }
 
-.ec-modal-body-grid {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 60px;
+.custom-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    min-height: 500px;
+    background-color: #fdfaf5;
 }
 
-.ec-modal-description {
-    font-size: 18px;
-    line-height: 1.8;
+.slide {
+    display: none;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
-.ec-modal-sidebar {
+.slide.active {
+    display: block;
+    opacity: 1;
+}
+
+.slide-container {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    align-items: center;
+    padding: 40px 20px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.ec-modal-meta-box {
-    background: #fff;
-    padding: 30px;
-    border: 1px solid #eee;
+.slide-container--centered {
+    text-align: center;
 }
 
-.ec-modal-meta-box h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 0;
+.slide-image {
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
 }
 
-.ec-meta-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #f9f9f9;
-    font-size: 14px;
+.slide-image img {
+    max-width: 100%;
+    height: auto;
 }
 
-.ec-meta-row--block {
-    flex-direction: column;
-    gap: 5px;
-}
-
-.ec-label {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #888;
-}
-
-.ec-value {
-    color: #000;
-}
-
-.ec-prices-list {
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.ec-modal-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.ec-button-full {
+.slide-content {
     width: 100%;
-    text-align: center;
-    box-sizing: border-box;
+    max-width: 500px;
 }
 
-.ec-contact-button {
-    display: block;
-    text-align: center;
-    padding: 15px;
-    border: 1px solid #000;
+.slide-content--left {
+    text-align: left;
+}
+
+.slide-content p {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    margin: 20px auto;
     color: #000;
-    text-decoration: none;
-    font-family: 'Montserrat', sans-serif;
+}
+
+.slide-content ul {
+    margin: 5px 0 20px 0;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    list-style-position: inside;
+}
+
+.slide-content li {
+    margin-bottom: 5px;
+}
+
+.slide-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.wp-block-button__link {
+    border-radius: 0px !important;
+    padding: 7px 12px !important;
+    font-size: 12px !important;
+    font-weight: 300 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    display: inline-block !important;
+    text-decoration: none !important;
+}
+
+.go-back-button {
+    padding: 7px 12px;
     font-size: 12px;
+    font-weight: 300;
     letter-spacing: 1px;
-    transition: background 0.3s, color 0.3s;
-}
-
-.ec-contact-button:hover {
-    background: #000;
-    color: #fff;
-}
-
-.ec-back-button {
+    text-transform: uppercase;
+    display: inline-block;
+    cursor: pointer;
     background: none;
     border: none;
-    text-decoration: underline;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    color: #888;
-    margin-top: 10px;
+    color: #000;
 }
 
-@keyframes ecFadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.contact-link-wrapper {
+    margin: 1rem 0rem 1rem 7rem !important;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-    .ec-experience-item, .ec-experience-item:nth-child(even) {
-        flex-direction: column;
+    .contact-link-wrapper {
+        margin: 1rem 0 !important;
         text-align: center;
-    }
-    .ec-experience-title {
-        font-size: 32px;
-    }
-    .ec-modal-inner {
-        padding: 30px;
     }
 }
