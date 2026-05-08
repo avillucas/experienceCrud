@@ -10,9 +10,6 @@ import { __ } from '@wordpress/i18n';
 import Edit from './edit';
 import metadata from './block.json';
 
-registerBlockType( metadata.name, {
-    /**
-     * @see ./edit.js
-     */
+registerBlockType( metadata, {
     edit: Edit,
 } );

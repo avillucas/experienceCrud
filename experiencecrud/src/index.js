@@ -1,5 +1,4 @@
 /**
- * Gutenberg Entry Point
+ * Sidebar Entry Point
  */
 import './sidebar';
-import './blocks/experience-list';
