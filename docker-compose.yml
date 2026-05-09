@@ -26,14 +26,14 @@ services:
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
     volumes:
       - wp_datab:/var/www/html
-      - ./experiencecrud:/var/www/html/wp-content/plugins/experiencecrud
+      - ./dist:/var/www/html/wp-content/plugins/experiencecrud
 
   node-builder:
     image: node:18
     container_name: catenab_node
     working_dir: /usr/src/app
     volumes:
-      - ./experiencecrud:/usr/src/app
+      - .:/usr/src/app
     command: sh -c "npm install && npm run start"
 
 

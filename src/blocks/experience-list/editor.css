@@ -1,0 +1,79 @@
+/* Editor-specific styles for ec/experience-list */
+
+.wp-block-ec-experience-list {
+    border: 1px solid #e0dcd5;
+    background: #fdfaf5;
+    padding: 10px;
+    margin: 20px 0;
+}
+
+/* Reset height in editor to avoid breaking the canvas */
+.ec-experience-list-wrapper {
+    min-height: 400px !important;
+    height: auto !important;
+    max-height: 600px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #e0dcd5;
+}
+
+/* Ensure sidebar is visible and scrollable if many items */
+.slide-selector {
+    flex: 0 0 250px !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    border-right: 1px solid #e0dcd5;
+}
+
+/* Fix thumbnail sizing in editor */
+.slide-box {
+    min-height: 80px !important;
+    height: 80px !important;
+    flex: none !important;
+    background-size: cover;
+    background-position: center;
+}
+
+.slide-box h3 {
+    font-size: 12px !important;
+    letter-spacing: 1px !important;
+}
+
+/* Content area in editor */
+.custom-slider {
+    flex: 1;
+    padding: 20px !important;
+    overflow-y: auto;
+    background: #fff;
+}
+
+/* Hide all slides by default in editor */
+.slide {
+    display: none !important;
+    opacity: 0;
+}
+
+/* Show only the first slide (Intro) in the editor since JS doesn't run */
+.slide[data-slide-index="0"] {
+    display: block !important;
+    opacity: 1;
+}
+
+.experience-title {
+    font-size: 24px !important;
+    margin-bottom: 15px !important;
+}
+
+/* Info message for the editor */
+.wp-block-ec-experience-list::before {
+    content: "Vista previa de Experiencias (Los controles interactivos funcionan en el sitio público)";
+    display: block;
+    background: #7d6c5a;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
