@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run copy-php && wp-scripts start",
     "build": "npm run copy-php && wp-scripts build",
-    "copy-php": "mkdir -p dist && cp src/experience-crud.php dist/ && cp -r src/includes dist/",
+    "copy-php": "mkdir -p dist && cp -r src/* dist/ && [ -d vendor ] && cp -r vendor dist/ || true",
     "format": "wp-scripts format",
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update"

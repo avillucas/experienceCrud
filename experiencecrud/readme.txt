@@ -1,25 +1,32 @@
 === Experience CRUD ===
-Contributors: lucas
+Contributors: avillucas
+Tags: winery, experiences, gutenberg, polylang
 Requires at least: 6.0
 Tested up to: 6.5
-Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Gestiona experiencias de lujo para bodegas con un diseño premium y bloques de Gutenberg.
+Gestión de Experiencias vitivinícolas de lujo para Bodega Catena Zapata.
 
 == Description ==
 
-Este plugin permite administrar "Experiencias" como un Custom Post Type. Incluye metadatos personalizados editables desde la barra lateral de Gutenberg y un bloque dinámico para mostrar el listado con un modal de detalles.
+Este plugin permite gestionar "Experiencias" como un Post Type personalizado con campos específicos (duración, degustaciones, inclusiones, capacidad, etc.). Incluye bloques de Gutenberg premium para mostrar un Slider de cabecera y un listado interactivo con detalles en modal.
 
 == Installation ==
 
-1. Subir la carpeta `experiencecrud` a `/wp-content/plugins/`.
-2. Activar el plugin.
-3. Asegurarse de compilar los assets con `npm install` y `npm run build` si es necesario.
+1. Sube la carpeta `experiencecrud` al directorio `/wp-content/plugins/`.
+2. Activa el plugin a través del menú 'Plugins' en WordPress.
+3. Asegúrate de tener Polylang instalado si deseas soporte multi-idioma.
 
-== Changelog ==
+== Usage ==
 
-= 1.0.0 =
-* Versión inicial con CPT, Meta Sidebar y Bloque Dinámico.
+1. Ve a "Experiencias" en el menú lateral.
+2. Crea una nueva experiencia y completa los campos en la barra lateral derecha (Experience Details).
+3. En cualquier página, añade el bloque "Experience Header Slider" para la cabecera.
+4. Añade el bloque "Experience List" para mostrar el listado de experiencias.
+
+== Architecture ==
+
+El plugin utiliza Arquitectura Hexagonal y DDD:
+- Core/Domain: Entidades y Repositorios.
+- Infrastructure: Implementación específica de WordPress.

@@ -14,11 +14,35 @@ class EC_Meta {
 				'default'     => 'turismo@catenazapata.com',
 				'sanitize'    => 'sanitize_email',
 			],
-			'ec_booking_url' => [
+			'ec_booking_url'   => [
 				'type'        => 'string',
 				'description' => 'Booking URL',
 				'default'     => 'https://catenazapata.meitre.com/',
 				'sanitize'    => 'esc_url_raw',
+			],
+			'ec_duration_min'  => [
+				'type'        => 'integer',
+				'description' => 'Duration in minutes',
+				'default'     => 60,
+				'sanitize'    => 'absint',
+			],
+			'ec_min_members'   => [
+				'type'        => 'integer',
+				'description' => 'Minimum members',
+				'default'     => 1,
+				'sanitize'    => 'absint',
+			],
+			'ec_max_members'   => [
+				'type'        => 'integer',
+				'description' => 'Maximum members',
+				'default'     => 10,
+				'sanitize'    => 'absint',
+			],
+			'ec_prices_list'   => [
+				'type'        => 'string',
+				'description' => 'Prices list',
+				'default'     => '',
+				'sanitize'    => 'sanitize_textarea_field',
 			],
 		];
 

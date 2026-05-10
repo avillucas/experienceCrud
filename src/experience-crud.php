@@ -19,42 +19,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'EC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EC_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * Autoload de clases (Simple)
- */
-spl_autoload_register( function ( $class ) {
-	$prefix = 'EC_';
-	if ( strpos( $class, $prefix ) !== 0 ) {
-		return;
-	}
-
-	$file = EC_PATH . 'includes/class-' . strtolower( str_replace( '_', '-', $class ) ) . '.php';
-	if ( file_exists( $file ) ) {
-		require_once $file;
-	}
-} );
+// Cargar Autoload de Composer
+if ( file_exists( EC_PATH . 'vendor/autoload.php' ) ) {
+	require_once EC_PATH . 'vendor/autoload.php';
+}
 
 /**
  * Inicializar el plugin
  */
 function ec_init_plugin() {
-	// Registro de CPT y Meta
-	$cpt = new EC_CPT();
-	$meta = new EC_Meta();
-	$metaboxes = new EC_Metaboxes();
-	$i18n = new EC_I18n();
+	// Registro de CPT y Meta via MetaHandler (Infraestructura)
+	$meta_handler = new \ExperienceCrud\Infrastructure\WordPress\MetaHandler();
+	$meta_handler->register();
 
-	add_action( 'init', [ $cpt, 'register' ] );
-	add_action( 'init', [ $meta, 'register' ] );
-	add_action( 'add_meta_boxes', [ $metaboxes, 'register' ] );
-	add_action( 'save_post', [ $metaboxes, 'save' ] );
-	add_action( 'plugins_loaded', [ $i18n, 'load_textdomain' ] );
-
-	// Integración con Polylang (solo si está activo)
-	if ( class_exists( 'Polylang' ) || function_exists( 'pll_current_language' ) ) {
-		$polylang = new EC_Polylang();
-		$polylang->register();
-	}
+	// Cargar traducciones
+	load_plugin_textdomain( 'experience-crud', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'ec_init_plugin' );
 
@@ -66,6 +45,8 @@ function ec_register_blocks() {
 		EC_PATH . 'blocks/experience-list',
 		[ 'render_callback' => 'ec_render_experience_list' ]
 	);
+
+	register_block_type( EC_PATH . 'blocks/experience-header-slider' );
 }
 add_action( 'init', 'ec_register_blocks' );
 
