@@ -22,6 +22,18 @@ define( 'EC_URL', plugin_dir_url( __FILE__ ) );
 // Cargar Autoload de Composer
 if ( file_exists( EC_PATH . 'vendor/autoload.php' ) ) {
 	require_once EC_PATH . 'vendor/autoload.php';
+} else {
+	spl_autoload_register( function ( $class ) {
+		$prefix   = 'ExperienceCrud\\';
+		$base_dir = EC_PATH . 'src/';
+		if ( strncmp( $prefix, $class, strlen( $prefix ) ) !== 0 ) {
+			return;
+		}
+		$file = $base_dir . str_replace( '\\', '/', substr( $class, strlen( $prefix ) ) ) . '.php';
+		if ( file_exists( $file ) ) {
+			require $file;
+		}
+	} );
 }
 
 /**
