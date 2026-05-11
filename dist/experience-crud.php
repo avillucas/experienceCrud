@@ -79,24 +79,30 @@ function ec_render_experience_slider_list( $attributes ) {
 }
 
 /**
- * Registrar la plantilla de página "Experiencias".
- *
- * theme_page_templates  → la expone en el dropdown "Plantilla" del editor.
- * template_include      → la carga desde el plugin en lugar del tema.
+ * Registrar la plantilla de página "Experiencias" como block template (compatible con FSE).
+ * register_block_template() requiere WordPress 6.7+.
  */
-add_filter( 'theme_page_templates', function ( $templates ) {
-	$templates['templates/page-experiencias.php'] = __( 'Experiencias', 'experience-crud' );
-	return $templates;
-} );
-
-add_filter( 'template_include', function ( $template ) {
-	if ( is_page() && get_page_template_slug() === 'templates/page-experiencias.php' ) {
-		$plugin_template = EC_PATH . 'templates/page-experiencias.php';
-		if ( file_exists( $plugin_template ) ) {
-			return $plugin_template;
-		}
+add_action( 'init', function () {
+	if ( ! function_exists( 'register_block_template' ) ) {
+		return;
 	}
-	return $template;
+
+	register_block_template(
+		'experiencecrud//page-experiencias',
+		[
+			'title'       => __( 'Experiencias', 'experience-crud' ),
+			'description' => __( 'Página de experiencias vitivinícolas – header slider + selector de experiencias.', 'experience-crud' ),
+			'post_types'  => [ 'page' ],
+			'content'     => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"default"}} -->
+<main class="wp-block-group">
+<!-- wp:ec/experience-header-slider /-->
+<!-- wp:ec/experience-slider-list /-->
+</main>
+<!-- /wp:group -->
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->',
+		]
+	);
 } );
 
 /**

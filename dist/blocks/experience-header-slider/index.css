@@ -1,18 +1,1 @@
-/*!****************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/blocks/experience-header-slider/editor.css ***!
-  \****************************************************************************************************************************************************************************************************/
-.ec-header-slider-edit {
-    background: #f0f0f0;
-    padding: 40px;
-    border: 1px dashed #ccc;
-    text-align: center;
-}
-
-.ec-header-slider-edit h1 {
-    font-family: 'EB Garamond', serif;
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-
-/*# sourceMappingURL=index.css.map*/
+.ec-header-slider-edit{background:#f0f0f0;border:1px dashed #ccc;padding:40px;text-align:center}.ec-header-slider-edit h1{font-family:EB Garamond,serif;font-size:32px;margin-bottom:20px}
