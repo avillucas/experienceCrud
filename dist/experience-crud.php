@@ -60,7 +60,10 @@ function ec_register_blocks() {
 
 	register_block_type( EC_PATH . 'blocks/experience-header-slider' );
 
-	register_block_type( EC_PATH . 'blocks/experience-slider-list' );
+	register_block_type(
+		EC_PATH . 'blocks/experience-slider-list',
+		[ 'render_callback' => 'ec_render_experience_slider_list' ]
+	);
 }
 add_action( 'init', 'ec_register_blocks' );
 
@@ -69,6 +72,10 @@ add_action( 'init', 'ec_register_blocks' );
  */
 function ec_render_experience_list( $attributes ) {
 	return require EC_PATH . 'blocks/experience-list/render.php';
+}
+
+function ec_render_experience_slider_list( $attributes ) {
+	return require EC_PATH . 'blocks/experience-slider-list/render.php';
 }
 
 /**

@@ -2,15 +2,16 @@
 /**
  * Render callback for ec/experience-slider-list block.
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Block inner content.
- * @var WP_Block $block      Block instance.
+ * @param array $attributes Block attributes.
+ * @return string Rendered HTML.
  */
 
 use ExperienceCrud\Infrastructure\WordPress\WordPressExperienceRepository;
 
 $repository  = new WordPressExperienceRepository();
 $experiences = $repository->findAll();
+
+ob_start();
 
 $intro_logo    = $attributes['introLogoUrl'] ?? '';
 $intro_text    = $attributes['introText'] ?? '';
@@ -220,3 +221,5 @@ $block_uid = 'ec-sl-' . wp_unique_id();
 	} );
 } )();
 </script>
+<?php
+return ob_get_clean();
