@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "npm run copy-php && wp-scripts start",
-    "build": "npm run copy-php && wp-scripts build",
+    "build": "wp-scripts build && npm run copy-php",
     "copy-php": "mkdir -p dist && cp -r src/* dist/ && [ -d vendor ] && cp -r vendor dist/ || true",
     "format": "wp-scripts format",
     "lint:js": "wp-scripts lint-js",

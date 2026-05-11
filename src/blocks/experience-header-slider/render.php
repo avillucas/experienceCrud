@@ -5,6 +5,7 @@
 
 $title = $attributes['title'] ?? '';
 $description = $attributes['description'] ?? '';
+$bg_image = $attributes['backgroundImage'] ?? 'https://catenazapata.com/img/bodega-bg.jpg';
 
 // Translatable strings if Polylang is active
 if ( function_exists( 'pll__' ) ) {
@@ -12,7 +13,7 @@ if ( function_exists( 'pll__' ) ) {
     $description = pll__( $description );
 }
 ?>
-<div class="ec-header-slider">
+<div class="ec-header-slider" style="background-image: url('<?php echo esc_url( $bg_image ); ?>');">
     <div class="ec-header-slider__overlay"></div>
     <div class="ec-header-slider__container">
         <div class="ec-header-slider__content">

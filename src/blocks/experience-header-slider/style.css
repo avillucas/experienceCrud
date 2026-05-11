@@ -2,7 +2,6 @@
     position: relative;
     height: 60vh;
     min-height: 500px;
-    background-image: url('https://catenazapata.com/img/bodega-bg.jpg'); /* Placeholder, should be configurable or dynamic */
     background-size: cover;
     background-position: center;
     display: flex;
