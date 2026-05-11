@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "ec/experience-header-slider",
+  "version": "1.0.0",
+  "title": "Experience Header Slider",
+  "category": "theme",
+  "icon": "images-alt2",
+  "description": "Slider for the top of the Experiences page.",
+  "supports": {
+    "html": false,
+    "anchor": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Nuestras Experiencias"
+    },
+    "description": {
+      "type": "string",
+      "default": "Si tiene planeado visitar Mendoza, nos encantaría recibirlo en nuestra bodega familiar."
+    },
+    "backgroundImage": {
+      "type": "string",
+      "default": "https://catenazapata.com/img/bodega-bg.jpg"
+    }
+  },
+  "textdomain": "experience-crud",
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

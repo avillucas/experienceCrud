@@ -7,8 +7,9 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "npm run copy-php && wp-scripts start",
-    "build": "wp-scripts build && npm run copy-php",
-    "copy-php": "mkdir -p dist && cp -r src/* dist/ && [ -d vendor ] && cp -r vendor dist/ || true",
+    "build": "wp-scripts build && npm run copy-php && npm run copy-css",
+    "copy-php": "mkdir -p dist/src dist/templates && cp src/experience-crud.php dist/ && cp -r src/Core src/Infrastructure src/includes dist/src/ && cp src/templates/*.php dist/templates/ && [ -d vendor ] && cp -r vendor dist/ || true",
+    "copy-css": "find src/blocks -name style.css -o -name editor.css | while read f; do t=dist/blocks/${f#src/blocks/}; mkdir -p $(dirname $t); cp $f $t; done",
     "format": "wp-scripts format",
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update"
