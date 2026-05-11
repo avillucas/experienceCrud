@@ -7,8 +7,6 @@ module.exports = {
 	entry: {
 		index: path.resolve( process.cwd(), 'src', 'index.js' ),
 		'blocks/experience-list/index': path.resolve( process.cwd(), 'src', 'blocks', 'experience-list', 'index.js' ),
-		'blocks/experience-header-slider/index': path.resolve( process.cwd(), 'src', 'blocks', 'experience-header-slider', 'index.js' ),
-		'blocks/experience-slider-list/index': path.resolve( process.cwd(), 'src', 'blocks', 'experience-slider-list', 'index.js' ),
 	},
 	output: {
 		filename: '[name].js',

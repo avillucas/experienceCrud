@@ -57,13 +57,6 @@ function ec_register_blocks() {
 		EC_PATH . 'blocks/experience-list',
 		[ 'render_callback' => 'ec_render_experience_list' ]
 	);
-
-	register_block_type( EC_PATH . 'blocks/experience-header-slider' );
-
-	register_block_type(
-		EC_PATH . 'blocks/experience-slider-list',
-		[ 'render_callback' => 'ec_render_experience_slider_list' ]
-	);
 }
 add_action( 'init', 'ec_register_blocks' );
 
@@ -73,37 +66,6 @@ add_action( 'init', 'ec_register_blocks' );
 function ec_render_experience_list( $attributes ) {
 	return require EC_PATH . 'blocks/experience-list/render.php';
 }
-
-function ec_render_experience_slider_list( $attributes ) {
-	return require EC_PATH . 'blocks/experience-slider-list/render.php';
-}
-
-/**
- * Registrar la plantilla de página "Experiencias" como block template (compatible con FSE).
- * register_block_template() requiere WordPress 6.7+.
- */
-add_action( 'init', function () {
-	if ( ! function_exists( 'register_block_template' ) ) {
-		return;
-	}
-
-	register_block_template(
-		'experiencecrud//page-experiencias',
-		[
-			'title'       => __( 'Experiencias', 'experience-crud' ),
-			'description' => __( 'Página de experiencias vitivinícolas – header slider + selector de experiencias.', 'experience-crud' ),
-			'post_types'  => [ 'page' ],
-			'content'     => '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"0","bottom":"0"}}},"layout":{"type":"default"}} -->
-<main class="wp-block-group">
-<!-- wp:ec/experience-header-slider /-->
-<!-- wp:ec/experience-slider-list /-->
-</main>
-<!-- /wp:group -->
-<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->',
-		]
-	);
-} );
 
 /**
  * Encolar sidebar plugin en el editor
