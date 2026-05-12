@@ -1,12 +1,23 @@
 <?php
 /**
  * Render callback for the ec/experience-list block.
+ * Layout: alternating image/text rows following Figma design.
  */
 
 use ExperienceCrud\Infrastructure\WordPress\WordPressExperienceRepository;
 
 $repository = new WordPressExperienceRepository();
-$experiences = $repository->findAll();
+
+// Detect the current language: Polylang frontend → REST ?lang param → repository fallback.
+$lang = '';
+if ( function_exists( 'pll_current_language' ) ) {
+	$lang = pll_current_language() ?: '';
+}
+if ( empty( $lang ) && isset( $_GET['lang'] ) ) {
+	$lang = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+}
+
+$experiences = $repository->findAll( $lang );
 
 $schema_data = [
 	'@context'        => 'https://schema.org',
@@ -16,58 +27,74 @@ $schema_data = [
 
 ob_start();
 ?>
-<div class="ec-experience-list-wrapper"> 
-	<div class="experience-grid">
-		<?php foreach ( $experiences as $index => $experience ) : 
-			$thumbnail_url = get_the_post_thumbnail_url( $experience->getId(), 'large' );
-			$schema_data['itemListElement'][] = [
-				'@type'    => 'ListItem',
-				'position' => $index + 1,
-				'item'     => [
-					'@type'       => 'Service',
-					'name'        => $experience->getTitle(),
-					'description' => $experience->getShortDescription(),
-					'url'         => get_permalink( $experience->getId() ),
-				],
-			];
-		?>
-			<div class="experience-card">
-				<div class="experience-card__image" style="background-image: url('<?php echo esc_url( $thumbnail_url ); ?>');"></div>
-				<div class="experience-card__content">
-					<h3 class="experience-card__title"><?php echo esc_html( $experience->getTitle() ); ?></h3>
-					<p class="experience-card__excerpt"><?php echo esc_html( $experience->getShortDescription() ); ?></p>
-					<button class="experience-card__button open-modal" data-target="modal-<?php echo $experience->getId(); ?>">
-						<?php echo esc_html( function_exists( 'pll__' ) ? pll__( 'MORE INFORMATION' ) : __( 'MORE INFORMATION', 'experience-crud' ) ); ?>
-					</button>
-				</div>
+<div class="ec-exp-list">
+	<?php foreach ( $experiences as $index => $experience ) :
+		$thumbnail_url = get_the_post_thumbnail_url( $experience->getId(), 'large' );
+		$is_image_right = $index % 2 !== 0;
+		$schema_data['itemListElement'][] = [
+			'@type'    => 'ListItem',
+			'position' => $index + 1,
+			'item'     => [
+				'@type'       => 'Service',
+				'name'        => $experience->getTitle(),
+				'description' => $experience->getShortDescription(),
+				'url'         => get_permalink( $experience->getId() ),
+			],
+		];
+	?>
+		<div class="ec-exp-row <?php echo $is_image_right ? 'ec-exp-row--image-right' : 'ec-exp-row--image-left'; ?>">
+			<div class="ec-exp-row__image">
+				<?php if ( $thumbnail_url ) : ?>
+					<img
+						src="<?php echo esc_url( $thumbnail_url ); ?>"
+						alt="<?php echo esc_attr( $experience->getTitle() ); ?>"
+						loading="lazy"
+					/>
+				<?php endif; ?>
 			</div>
 
-			<!-- Modal for details -->
-			<dialog id="modal-<?php echo $experience->getId(); ?>" class="experience-modal">
-				<div class="modal-content">
-					<button class="close-modal">&times;</button>
-					<div class="modal-body">
-						<div class="modal-header">
-							<h2 class="modal-title"><?php echo esc_html( $experience->getTitle() ); ?></h2>
-							<div class="modal-meta">
-								<span><?php printf( esc_html__( '%d min', 'experience-crud' ), $experience->getDuration() ); ?></span>
-								<span><?php printf( esc_html__( 'Groups: %d-%d', 'experience-crud' ), $experience->getMinPersons(), $experience->getMaxPersons() ); ?></span>
-							</div>
-						</div>
-						
-						<div class="modal-description">
-							<?php echo wp_kses_post( wpautop( $experience->getFullDescription() ?: $experience->getShortDescription() ) ); ?>
-						</div>
+			<div class="ec-exp-row__content">
+				<h2 class="ec-exp-row__title"><?php echo esc_html( $experience->getTitle() ); ?></h2>
+				<?php if ( $experience->getShortDescription() ) : ?>
+					<p class="ec-exp-row__desc"><?php echo esc_html( $experience->getShortDescription() ); ?></p>
+				<?php endif; ?>
+				<button
+					class="ec-exp-row__btn open-modal"
+					data-target="modal-<?php echo esc_attr( $experience->getId() ); ?>"
+				>
+					<?php echo esc_html( ec_t( 'MORE INFORMATION', 'MÁS INFORMACIÓN' ) ); ?>
+				</button>
+			</div>
+		</div>
 
+		<dialog id="modal-<?php echo esc_attr( $experience->getId() ); ?>" class="experience-modal">
+			<div class="modal-content">
+				<button class="close-modal" aria-label="<?php echo esc_attr( ec_t( 'Close', 'Cerrar' ) ); ?>">&times;</button>
+				<div class="modal-body">
+					<div class="modal-header">
+						<h2 class="modal-title"><?php echo esc_html( $experience->getTitle() ); ?></h2>
+						<div class="modal-meta">
+							<?php if ( $experience->getDuration() ) : ?>
+								<span><?php printf( '%d min', $experience->getDuration() ); ?></span>
+							<?php endif; ?>
+							<span><?php printf( ec_t( 'Groups: %d–%d', 'Grupos: %d–%d' ), $experience->getMinPersons(), $experience->getMaxPersons() ); ?></span>
+						</div>
+					</div>
+
+					<div class="modal-description">
+						<?php echo wp_kses_post( do_blocks( $experience->getFullDescription() ?: $experience->getShortDescription() ) ); ?>
+					</div>
+
+					<?php if ( ! empty( $experience->getIncludes() ) || ! empty( $experience->getTastings() ) ) : ?>
 						<div class="modal-details-grid">
 							<?php if ( ! empty( $experience->getIncludes() ) ) : ?>
 								<div class="detail-section">
-									<h4><?php esc_html_e( 'Includes', 'experience-crud' ); ?></h4>
+									<h4><?php echo esc_html( ec_t( 'Includes', 'Incluye' ) ); ?></h4>
 									<ul>
 										<?php foreach ( $experience->getIncludes() as $item ) : ?>
 											<li>
 												<?php if ( ! empty( $item['url'] ) ) : ?>
-													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank"><?php echo esc_html( $item['text'] ); ?></a>
+													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $item['text'] ); ?></a>
 												<?php else : ?>
 													<?php echo esc_html( $item['text'] ); ?>
 												<?php endif; ?>
@@ -79,12 +106,12 @@ ob_start();
 
 							<?php if ( ! empty( $experience->getTastings() ) ) : ?>
 								<div class="detail-section">
-									<h4><?php esc_html_e( 'Tastings', 'experience-crud' ); ?></h4>
+									<h4><?php echo esc_html( ec_t( 'Tastings', 'Degustaciones' ) ); ?></h4>
 									<ul>
 										<?php foreach ( $experience->getTastings() as $item ) : ?>
 											<li>
 												<?php if ( ! empty( $item['url'] ) ) : ?>
-													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank"><?php echo esc_html( $item['text'] ); ?></a>
+													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $item['text'] ); ?></a>
 												<?php else : ?>
 													<?php echo esc_html( $item['text'] ); ?>
 												<?php endif; ?>
@@ -94,21 +121,21 @@ ob_start();
 								</div>
 							<?php endif; ?>
 						</div>
+					<?php endif; ?>
 
-						<div class="modal-footer">
-							<a href="<?php echo esc_url( $experience->getBookingUrl() ); ?>" class="btn-booking">
-								<?php echo esc_html( function_exists( 'pll__' ) ? pll__( 'BOOK NOW' ) : __( 'BOOK NOW', 'experience-crud' ) ); ?>
-							</a>
-							<p class="contact-info">
-								<?php esc_html_e( 'Questions?', 'experience-crud' ); ?> 
-								<a href="mailto:<?php echo esc_attr( $experience->getEmail() ); ?>"><?php echo esc_html( $experience->getEmail() ); ?></a>
-							</p>
-						</div>
+					<div class="modal-footer">
+						<a href="<?php echo esc_url( $experience->getBookingUrl() ); ?>" class="btn-booking" target="_blank" rel="noopener">
+							<?php echo esc_html( ec_t( 'BOOK NOW', 'RESERVAR' ) ); ?>
+						</a>
+						<p class="contact-info">
+							<?php echo esc_html( ec_t( 'Questions?', '¿Preguntas?' ) ); ?>
+							<a href="mailto:<?php echo esc_attr( $experience->getEmail() ); ?>"><?php echo esc_html( $experience->getEmail() ); ?></a>
+						</p>
 					</div>
 				</div>
-			</dialog>
-		<?php endforeach; ?>
-	</div>
+			</div>
+		</dialog>
+	<?php endforeach; ?>
 </div>
 
 <script type="application/ld+json">
@@ -116,30 +143,31 @@ ob_start();
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-	const openButtons = document.querySelectorAll('.open-modal');
-	const closeButtons = document.querySelectorAll('.close-modal');
-
-	openButtons.forEach(btn => {
-		btn.addEventListener('click', () => {
-			const modal = document.getElementById(btn.dataset.target);
-			if (modal) modal.showModal();
+(function () {
+	function initModals() {
+		document.querySelectorAll('.open-modal').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var modal = document.getElementById(btn.dataset.target);
+				if (modal) modal.showModal();
+			});
 		});
-	});
-
-	closeButtons.forEach(btn => {
-		btn.addEventListener('click', () => {
-			btn.closest('dialog').close();
+		document.querySelectorAll('.close-modal').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				btn.closest('dialog').close();
+			});
 		});
-	});
-
-	// Close on click outside
-	document.querySelectorAll('.experience-modal').forEach(modal => {
-		modal.addEventListener('click', (e) => {
-			if (e.target === modal) modal.close();
+		document.querySelectorAll('.experience-modal').forEach(function (modal) {
+			modal.addEventListener('click', function (e) {
+				if (e.target === modal) modal.close();
+			});
 		});
-	});
-});
+	}
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initModals);
+	} else {
+		initModals();
+	}
+})();
 </script>
 <?php
 return ob_get_clean();

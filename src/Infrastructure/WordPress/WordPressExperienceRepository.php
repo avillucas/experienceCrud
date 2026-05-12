@@ -14,10 +14,21 @@ class WordPressExperienceRepository implements ExperienceRepository {
             'post_status'    => 'publish',
         ];
 
-        if ( ! empty( $lang ) ) {
-            $args['lang'] = $lang;
-        } elseif ( function_exists( 'pll_current_language' ) ) {
-            $args['lang'] = pll_current_language();
+        $resolved_lang = $lang;
+
+        if ( empty( $resolved_lang ) && function_exists( 'pll_current_language' ) ) {
+            $resolved_lang = pll_current_language() ?: '';
+        }
+
+        if ( empty( $resolved_lang ) && function_exists( 'pll_get_post_language' ) ) {
+            $queried = get_queried_object();
+            if ( $queried instanceof \WP_Post ) {
+                $resolved_lang = pll_get_post_language( $queried->ID ) ?: '';
+            }
+        }
+
+        if ( ! empty( $resolved_lang ) ) {
+            $args['lang'] = $resolved_lang;
         }
 
         $query = new WP_Query( $args );
@@ -92,6 +103,11 @@ class WordPressExperienceRepository implements ExperienceRepository {
             return $default;
         }
         $value = json_decode( $meta[ $key ][0], true );
-        return is_array( $value ) ? $value : $default;
+        if ( ! is_array( $value ) ) {
+            return $default;
+        }
+        return array_map( function( $item ) {
+            return is_string( $item ) ? [ 'text' => $item, 'url' => '' ] : $item;
+        }, $value );
     }
 }

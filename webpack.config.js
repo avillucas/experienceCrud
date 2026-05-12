@@ -26,6 +26,16 @@ module.exports = {
 					context: path.resolve( process.cwd(), 'src' ),
 					noErrorOnMissing: true,
 				},
+				{
+					from: 'blocks/**/render.php',
+					context: path.resolve( process.cwd(), 'src' ),
+					noErrorOnMissing: true,
+				},
+				{
+					from: 'blocks/**/block.json',
+					context: path.resolve( process.cwd(), 'src' ),
+					noErrorOnMissing: true,
+				},
 			],
 		} ),
 	],

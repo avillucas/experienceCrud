@@ -80,6 +80,24 @@ function ec_render_experience_list( $attributes ) {
 }
 
 /**
+ * Returns a string in the current page language (ES or EN).
+ * Uses same language-detection fallback chain as the repository.
+ */
+function ec_t( string $en, string $es ): string {
+	$lang = '';
+	if ( function_exists( 'pll_current_language' ) ) {
+		$lang = pll_current_language() ?: '';
+	}
+	if ( empty( $lang ) && function_exists( 'pll_get_post_language' ) ) {
+		$queried = get_queried_object();
+		if ( $queried instanceof \WP_Post ) {
+			$lang = pll_get_post_language( $queried->ID ) ?: '';
+		}
+	}
+	return $lang === 'es' ? $es : $en;
+}
+
+/**
  * Encolar sidebar plugin en el editor
  */
 function ec_enqueue_sidebar() {
