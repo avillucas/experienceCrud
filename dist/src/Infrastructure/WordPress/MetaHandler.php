@@ -31,14 +31,8 @@ class MetaHandler {
 
     private function register_meta() {
         $fields = [
-            'ec_includes'      => [ 'type' => 'string', 'default' => '[]' ],
-            'ec_tastings'      => [ 'type' => 'string', 'default' => '[]' ],
-            'ec_min_persons'   => [ 'type' => 'integer', 'default' => 1 ],
-            'ec_max_persons'   => [ 'type' => 'integer', 'default' => 10 ],
-            'ec_requirements'  => [ 'type' => 'string', 'default' => '[]' ],
             'ec_contact_email' => [ 'type' => 'string', 'default' => 'turismo@catenazapata.com' ],
             'ec_booking_url'   => [ 'type' => 'string', 'default' => 'https://catenazapata.meitre.com/' ],
-            'ec_duration'      => [ 'type' => 'integer', 'default' => 60 ],
         ];
 
         foreach ( $fields as $key => $args ) {

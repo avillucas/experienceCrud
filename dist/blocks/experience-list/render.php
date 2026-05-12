@@ -73,62 +73,18 @@ ob_start();
 				<div class="modal-body">
 					<div class="modal-header">
 						<h2 class="modal-title"><?php echo esc_html( $experience->getTitle() ); ?></h2>
-						<div class="modal-meta">
-							<?php if ( $experience->getDuration() ) : ?>
-								<span><?php printf( '%d min', $experience->getDuration() ); ?></span>
-							<?php endif; ?>
-							<span><?php printf( ec_t( 'Groups: %d–%d', 'Grupos: %d–%d' ), $experience->getMinPersons(), $experience->getMaxPersons() ); ?></span>
-						</div>
 					</div>
 
 					<div class="modal-description">
 						<?php echo wp_kses_post( do_blocks( $experience->getFullDescription() ?: $experience->getShortDescription() ) ); ?>
 					</div>
 
-					<?php if ( ! empty( $experience->getIncludes() ) || ! empty( $experience->getTastings() ) ) : ?>
-						<div class="modal-details-grid">
-							<?php if ( ! empty( $experience->getIncludes() ) ) : ?>
-								<div class="detail-section">
-									<h4><?php echo esc_html( ec_t( 'Includes', 'Incluye' ) ); ?></h4>
-									<ul>
-										<?php foreach ( $experience->getIncludes() as $item ) : ?>
-											<li>
-												<?php if ( ! empty( $item['url'] ) ) : ?>
-													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $item['text'] ); ?></a>
-												<?php else : ?>
-													<?php echo esc_html( $item['text'] ); ?>
-												<?php endif; ?>
-											</li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-							<?php endif; ?>
-
-							<?php if ( ! empty( $experience->getTastings() ) ) : ?>
-								<div class="detail-section">
-									<h4><?php echo esc_html( ec_t( 'Tastings', 'Degustaciones' ) ); ?></h4>
-									<ul>
-										<?php foreach ( $experience->getTastings() as $item ) : ?>
-											<li>
-												<?php if ( ! empty( $item['url'] ) ) : ?>
-													<a href="<?php echo esc_url( $item['url'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $item['text'] ); ?></a>
-												<?php else : ?>
-													<?php echo esc_html( $item['text'] ); ?>
-												<?php endif; ?>
-											</li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-							<?php endif; ?>
-						</div>
-					<?php endif; ?>
-
 					<div class="modal-footer">
 						<a href="<?php echo esc_url( $experience->getBookingUrl() ); ?>" class="btn-booking" target="_blank" rel="noopener">
 							<?php echo esc_html( ec_t( 'BOOK NOW', 'RESERVAR' ) ); ?>
 						</a>
 						<p class="contact-info">
-							<?php echo esc_html( ec_t( 'Questions?', '¿Preguntas?' ) ); ?>
+							<span><?php echo esc_html( ec_t( 'Contact us:', 'Contáctenos:' ) ); ?></span>
 							<a href="mailto:<?php echo esc_attr( $experience->getEmail() ); ?>"><?php echo esc_html( $experience->getEmail() ); ?></a>
 						</p>
 					</div>

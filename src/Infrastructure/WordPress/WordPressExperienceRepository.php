@@ -59,14 +59,8 @@ class WordPressExperienceRepository implements ExperienceRepository {
             $post->post_excerpt,
             $post->post_content,
             (int) get_post_thumbnail_id( $id ),
-            $this->unserializeMeta( $meta, 'ec_includes', [] ),
-            $this->unserializeMeta( $meta, 'ec_tastings', [] ),
-            (int) ( $meta['ec_min_persons'][0] ?? 1 ),
-            (int) ( $meta['ec_max_persons'][0] ?? 10 ),
-            $this->unserializeMeta( $meta, 'ec_requirements', [] ),
             $meta['ec_contact_email'][0] ?? 'turismo@catenazapata.com',
-            $meta['ec_booking_url'][0] ?? 'https://catenazapata.meitre.com/',
-            (int) ( $meta['ec_duration'][0] ?? 60 )
+            $meta['ec_booking_url'][0] ?? 'https://catenazapata.meitre.com/'
         );
     }
 
@@ -88,26 +82,9 @@ class WordPressExperienceRepository implements ExperienceRepository {
         }
 
         $id = $experience->getId();
-        update_post_meta( $id, 'ec_includes', wp_json_encode( $experience->getIncludes() ) );
-        update_post_meta( $id, 'ec_tastings', wp_json_encode( $experience->getTastings() ) );
-        update_post_meta( $id, 'ec_min_persons', $experience->getMinPersons() );
-        update_post_meta( $id, 'ec_max_persons', $experience->getMaxPersons() );
-        update_post_meta( $id, 'ec_requirements', wp_json_encode( $experience->getRequirements() ) );
         update_post_meta( $id, 'ec_contact_email', $experience->getEmail() );
         update_post_meta( $id, 'ec_booking_url', $experience->getBookingUrl() );
-        update_post_meta( $id, 'ec_duration', $experience->getDuration() );
     }
 
-    private function unserializeMeta( $meta, $key, $default ) {
-        if ( ! isset( $meta[ $key ][0] ) ) {
-            return $default;
-        }
-        $value = json_decode( $meta[ $key ][0], true );
-        if ( ! is_array( $value ) ) {
-            return $default;
-        }
-        return array_map( function( $item ) {
-            return is_string( $item ) ? [ 'text' => $item, 'url' => '' ] : $item;
-        }, $value );
-    }
+
 }
