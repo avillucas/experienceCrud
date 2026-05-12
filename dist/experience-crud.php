@@ -98,88 +98,89 @@ function ec_t( string $en, string $es ): string {
 }
 
 /**
- * Register the FSE block template "Contacto Experiencias (ES)" from the plugin.
- * Appears in the Template dropdown of the page editor and in the Site Editor.
+ * Plugin-provided FSE block templates.
+ * Each entry: slug => [ title, description, file ].
+ */
+function ec_plugin_templates(): array {
+	return [
+		'page-contacto-experiencias-es' => [
+			'title'       => __( 'Contacto Experiencias (ES)', 'experience-crud' ),
+			'description' => __( 'Página de experiencias vitivinícolas y contacto — español.', 'experience-crud' ),
+			'file'        => EC_PATH . 'templates/page-contacto-experiencias-es.html',
+		],
+		'page-contacto-experiencias-en' => [
+			'title'       => __( 'Contacto Experiencias (EN)', 'experience-crud' ),
+			'description' => __( 'Winery experiences and contact page — English.', 'experience-crud' ),
+			'file'        => EC_PATH . 'templates/page-contacto-experiencias-en.html',
+		],
+	];
+}
+
+function ec_make_block_template( string $slug, array $meta, string $id = '' ): WP_Block_Template {
+	$theme         = get_stylesheet();
+	$tpl           = new WP_Block_Template();
+	$tpl->type     = 'wp_template';
+	$tpl->theme    = $theme;
+	$tpl->slug     = $slug;
+	$tpl->id       = $id ?: ( $theme . '//' . $slug );
+	$tpl->title    = $meta['title'];
+	$tpl->description = $meta['description'];
+	$tpl->status   = 'publish';
+	$tpl->source   = 'plugin';
+	$tpl->origin   = 'plugin';
+	$tpl->is_custom = true;
+	$tpl->post_types = [ 'page' ];
+	$tpl->area     = 'uncategorized';
+	$tpl->content  = file_get_contents( $meta['file'] );
+	return $tpl;
+}
+
+/**
+ * Inject plugin templates into the template list (Site Editor + Template dropdown).
  */
 function ec_block_templates( $templates, $query, $template_type ) {
 	if ( 'wp_template' !== $template_type ) {
 		return $templates;
 	}
 
-	$slug = 'page-contacto-experiencias-es';
+	$registered_slugs = array_column( $templates, 'slug' );
 
-	// Skip if WordPress already loaded a user-customised version.
-	foreach ( $templates as $t ) {
-		if ( $t->slug === $slug ) {
-			return $templates;
+	foreach ( ec_plugin_templates() as $slug => $meta ) {
+		if ( in_array( $slug, $registered_slugs, true ) ) {
+			continue;
 		}
+		if ( ! empty( $query['slug__in'] ) && ! in_array( $slug, $query['slug__in'], true ) ) {
+			continue;
+		}
+		if ( ! file_exists( $meta['file'] ) ) {
+			continue;
+		}
+		$templates[] = ec_make_block_template( $slug, $meta );
 	}
 
-	// Respect slug filter when the editor requests a specific template.
-	if ( ! empty( $query['slug__in'] ) && ! in_array( $slug, $query['slug__in'], true ) ) {
-		return $templates;
-	}
-
-	$file = EC_PATH . 'templates/page-contacto-experiencias-es.html';
-	if ( ! file_exists( $file ) ) {
-		return $templates;
-	}
-
-	$theme             = get_stylesheet();
-	$tpl               = new WP_Block_Template();
-	$tpl->type         = 'wp_template';
-	$tpl->theme        = $theme;
-	$tpl->slug         = $slug;
-	$tpl->id           = $theme . '//' . $slug;
-	$tpl->title        = __( 'Contacto Experiencias (ES)', 'experience-crud' );
-	$tpl->description  = __( 'Página de experiencias vitivinícolas y contacto.', 'experience-crud' );
-	$tpl->status       = 'publish';
-	$tpl->source       = 'plugin';
-	$tpl->origin       = 'plugin';
-	$tpl->is_custom    = true;
-	$tpl->post_types   = [ 'page' ];
-	$tpl->area         = 'uncategorized';
-	$tpl->content      = file_get_contents( $file );
-
-	$templates[] = $tpl;
 	return $templates;
 }
 add_filter( 'get_block_templates', 'ec_block_templates', 10, 3 );
 
 /**
- * Serve the template when WordPress resolves it by ID.
+ * Serve a plugin template when WordPress resolves it by ID.
  */
 function ec_block_file_template( $tpl, $id, $template_type ) {
 	if ( 'wp_template' !== $template_type ) {
 		return $tpl;
 	}
 
-	$slug = 'page-contacto-experiencias-es';
+	$theme = get_stylesheet();
 
-	if ( $id !== get_stylesheet() . '//' . $slug ) {
-		return $tpl;
+	foreach ( ec_plugin_templates() as $slug => $meta ) {
+		if ( $id !== $theme . '//' . $slug ) {
+			continue;
+		}
+		if ( ! file_exists( $meta['file'] ) ) {
+			break;
+		}
+		return ec_make_block_template( $slug, $meta, $id );
 	}
-
-	$file = EC_PATH . 'templates/page-contacto-experiencias-es.html';
-	if ( ! file_exists( $file ) ) {
-		return $tpl;
-	}
-
-	$theme             = get_stylesheet();
-	$tpl               = new WP_Block_Template();
-	$tpl->type         = 'wp_template';
-	$tpl->theme        = $theme;
-	$tpl->slug         = $slug;
-	$tpl->id           = $id;
-	$tpl->title        = __( 'Contacto Experiencias (ES)', 'experience-crud' );
-	$tpl->description  = __( 'Página de experiencias vitivinícolas y contacto.', 'experience-crud' );
-	$tpl->status       = 'publish';
-	$tpl->source       = 'plugin';
-	$tpl->origin       = 'plugin';
-	$tpl->is_custom    = true;
-	$tpl->post_types   = [ 'page' ];
-	$tpl->area         = 'uncategorized';
-	$tpl->content      = file_get_contents( $file );
 
 	return $tpl;
 }
