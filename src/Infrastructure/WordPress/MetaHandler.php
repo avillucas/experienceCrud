@@ -22,7 +22,7 @@ class MetaHandler {
             'public'              => true,
             'show_in_rest'        => true,
             'menu_icon'           => 'dashicons-palmtree',
-            'has_archive'         => true,
+            'has_archive'         => false,
             'rewrite'             => [ 'slug' => 'experiencia' ],
         ];
 
